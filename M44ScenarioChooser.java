@@ -103,7 +103,7 @@ public class M44ScenarioChooser extends JDialog {
 	private JPanel jpYear;
 	private JCheckBox[] jcYear;
 	private boolean[] filterYears = new boolean[11];
-	private String[] yearNames = {"1936", "1937", "1938", "1939", "1940", "1941", "1942", "1943", "1944", "1945", "1946"};
+	private String[] yearNames = {"1936", "1937", "1938", "1939", "1940", "1941", "1942", "1943", "1944", "1945"};
 	private String[] monthNames = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 	
 	private JCheckBox jcOfficialScenarios;

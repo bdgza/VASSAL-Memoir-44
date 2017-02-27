@@ -707,6 +707,8 @@ implements GameComponent, CommandEncoder {
 			return "france";
 		if (nation.equals("scotland"))
 			return "scotland";
+		if (nation.equals("india"))
+			return "india";
 		
 		if (nation.equals("nationalist spain")) return "spainrep";
 		if (nation.equals("republican spain")) return "spainnat";
