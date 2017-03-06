@@ -756,6 +756,8 @@ implements GameComponent, CommandEncoder {
 		input = input.replaceAll("(?!>)(Permanent Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Permanent Majority Medal Objective[s]? \\(Turn Start\\))", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Permanent Majority Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
+		input = input.replaceAll("(?!>)(Temporary Sole Control, Last to Occupy Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
+		input = input.replaceAll("(?!>)(Temporary Sole Control Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Last to Occupy Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Sole Control Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Sudden Death Objective[s]?)", "<span class=\"objective\">$1</span>");
