@@ -322,349 +322,419 @@ implements GameComponent, CommandEncoder {
 						subtitle = name;
 					}
 				}
-
-				lastmaintitle = notes[0];
-				//}
-
-				html = "<html>\n<body>\n";
 				
-				if (!blnSolexMedium && !blnHeadache)
-					html += "<table cols=\"2\"><tr><td><img src=\"battle-star-20.png\" /></td><td><h3>Missing font -- for best results please install the \"Solex Medium\" or <a href=\"http://www.fonts2u.com/headache-normal.font\">\"Headache Normal\"</a> font.</h3></td></tr></table>";
-				if (!blnArmy)
-					html += "<table cols=\"2\"><tr><td><img src=\"battle-star-20.png\" /></td><td><h3>Missing font -- for best results please install the <a href=\"http://www.fonts4free.net/army-font.html\">\"Army\"</a> font.</h3></td></tr></table>";
-				if (!blnGunplay)
-					html += "<table cols=\"2\"><tr><td><img src=\"battle-star-20.png\" /></td><td><h3>Missing font -- for best results please install the <a href=\"http://www.fonts4free.net/gunplay-font.html\">\"Gunplay\"</a> font.</h3></td></tr></table>";
-
-				if (!blnSolexMedium || !blnArmy || !blnGunplay)
-					html += "<hr>";
-				
-				int iter = 0;
-				String front = "";
-				String dowid = "";
-
-				boolean multiMap = false;
-
-				do
+				if (notes[0].startsWith("<html>"))
 				{
-					multiMap = false;
-
-					if (notes.length >= 1) {
-						
-						String maintitle = notes[iter++];
-						String maintitle2 = "";
-						if (notes.length >= 2)
-							maintitle2 = notes[iter++];
-						if (maintitle2.length() > 0)
+					html = scenarioNotes;
+				}
+				else
+				{
+					lastmaintitle = notes[0];
+					//}
+	
+					html = "<html>\n<body>\n";
+					
+					if (!blnSolexMedium && !blnHeadache)
+						html += "<table cols=\"2\"><tr><td><img src=\"battle-star-20.png\" /></td><td><h3>Missing font -- for best results please install the \"Solex Medium\" or <a href=\"http://www.fonts2u.com/headache-normal.font\">\"Headache Normal\"</a> font.</h3></td></tr></table>";
+					if (!blnArmy)
+						html += "<table cols=\"2\"><tr><td><img src=\"battle-star-20.png\" /></td><td><h3>Missing font -- for best results please install the <a href=\"http://www.fonts4free.net/army-font.html\">\"Army\"</a> font.</h3></td></tr></table>";
+					if (!blnGunplay)
+						html += "<table cols=\"2\"><tr><td><img src=\"battle-star-20.png\" /></td><td><h3>Missing font -- for best results please install the <a href=\"http://www.fonts4free.net/gunplay-font.html\">\"Gunplay\"</a> font.</h3></td></tr></table>";
+	
+					if (!blnSolexMedium || !blnArmy || !blnGunplay)
+						html += "<hr>";
+					
+					int iter = 0;
+					String front = "";
+					String dowid = "";
+	
+					boolean multiMap = false;
+	
+					do
+					{
+						multiMap = false;
+	
+						if (notes.length >= 1) {
+							
+							String maintitle = notes[iter++];
+							String maintitle2 = "";
+							if (notes.length >= 2)
+								maintitle2 = notes[iter++];
+							if (maintitle2.length() > 0)
+								iter++;
 							iter++;
-						iter++;
-
-						String date = maintitle.replaceAll(".*? \\- ((January|February|March|April|May|June|July|August|September|October|November|December).*)", "$1");
-						String title = maintitle;
-						if (date.equals(title))
-							date = "";
-						if (date.length() > 0)
-							title = title.substring(0, title.length() - date.length() - 3);
-						
-						//String title = nthfield(maintitle, " - ", 1);
-						//date = "";
-						//if (title.length() + 2 < maintitle.length())
-						//	date = maintitle.substring(title.length() + 2);
-
-						String operation = "";
-						if (title.endsWith(")")) {
-							operation = nthfield(title, " \\(", 2);
-							operation = operation.substring(0, operation.length() - 1);
-							if (title.length() - operation.length() - 3 > 0)
-								title = title.substring(0, title.length() - operation.length() - 3);
-						}
-						
-						if (subtitle != null) {
-							String stitle = nthfield(subtitle, "\\(", 2);
-							stitle = stitle.substring(0, stitle.length() - 1);
-
-							if (stitle.toLowerCase().startsWith("west")) {
-								front = "Western";
-							} else if (stitle.toLowerCase().startsWith("east")) {
-								front = "Eastern";
-							} else if (stitle.toLowerCase().startsWith("med")) {
-								front = "Mediterranean";
-							} else if (stitle.toLowerCase().startsWith("pac")) {
-								front = "Pacific";
+	
+							String date = maintitle.replaceAll(".*? \\- ((January|February|March|April|May|June|July|August|September|October|November|December).*)", "$1");
+							String title = maintitle;
+							if (date.equals(title))
+								date = "";
+							if (date.length() > 0)
+								title = title.substring(0, title.length() - date.length() - 3);
+	
+							String operation = "";
+							if (title.endsWith(")")) {
+								operation = nthfield(title, " \\(", 2);
+								operation = operation.substring(0, operation.length() - 1);
+								if (title.length() - operation.length() - 3 > 0)
+									title = title.substring(0, title.length() - operation.length() - 3);
 							}
-
-							int id = subtitle.lastIndexOf("#");
-							if (id > -1 && (id+1) < subtitle.length()) {
-								dowid = subtitle.substring(id + 1);
-								dowid = dowid.substring(0, dowid.length() - 1);
-							}
-						}
-
-						html += "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" valign=\"bottom\"><td><h1>" + title + "</h1></td>\n";
-						html += "<td align=\"right\"><h2>" + date + "</h2></td></table>\n";
-						if (front.length() > 0 || operation.length() > 0 || maintitle2.length() > 0) {
-							html += "<table cellspacing=\"0\" cellpadding=\"0\" valign=\"bottom\">";
-							if (front.length() > 0) {
-								html += "<td><h2 class=\"front\">" + front + "&nbsp;&nbsp;</h2></td>\n";
-							}
-							if (operation.length() > 0) {
-								html += "<td><h2>" + operation + "&nbsp;&nbsp;</h2></td>\n";
-							}
-							if (maintitle2.length() > 0) {
-								html += "<td><h2 class=\"subtitle\">" + maintitle2 + "</h2></td>\n";
-							}
-							html += "</table>\n";
-						}
-					} else {
-						iter = 2;
-					}
-
-					html += "<br>";
-					html += "<h3>Historical Background</h3>";
-
-					int blank = 0;
-
-					while (iter < notes.length && blank < 2) {
-						if (notes[iter].length() == 0)
-							blank++;
-						else
-							blank = 0;
-
-						if (blank < 2)
-							html += notes[iter] + "<br>";
-
-						iter++;
-					}
-
-					html += "<h3>Briefing</h3>";
-
-					try {
-						String briefing = "<table width=\"100%\" cols=\"4\" border=\"1\">";
-						briefing += "<tr valign=\"top\">";
-						
-						int local = iter;
-						local++;
-						List<String> briefList = new ArrayList<String>();
-						
-						blank = 0;
-
-						while (local < notes.length && blank < 2) {
-							if (notes[local].length() == 0)
-								blank++;
-							else
-								blank = 0;
-
-							if (blank < 2)
-								briefList.add(notes[local]);
-
-							local++;
-						}
-						
-						String[] brief = briefList.toArray(new String[briefList.size()]);
-						
-						int i = 0;
-						
-						for (int start = 1; start <= 2; start++) {
-							String nation = "";
-							String flag = "";
-							String medal = "";
-							switch (start) {
-							case 1:
-								nation = "Axis";
-								flag = "germany";
-								medal = "medal-axis";
-								break;
-							case 2:
-								nation = "Allies";
-								flag = "us";
-								medal = "medal-allies";
-							}
-							if (brief[i].contains("]:")) {
-								nation = nthfield(nthfield(brief[i], "\\[", 2), "\\]: ", 1);
-							}
-							brief[i] = nthfield(brief[i], ": ", 2);
-
-							String cards = brief[i].replaceAll("Take ([0-9]{1,2}).*", "$1");
-							int period = brief[i].indexOf(".");
-							if (period == -1 || (period+1) == brief[i].length()) {
-								brief[i] = "";
-							} else {
-								brief[i] = brief[i].substring(period+2);
-							}
-
-							if (brief[i].length() == 0)
-								i++;
 							
-							String newFlag = flagForNation(nation);
-							if (newFlag.length() > 0)
-								flag = newFlag;
-							
-							// find victory medals
-							int j = iter + 1;
-							blank = 0;
-							
-							while (j < notes.length && blank < 2) {
-								if (notes[j].length() == 0)
-									blank++;
-								else
-									blank = 0;
-								j++;
-							}
-							j++;
-							
-							String medals = "";
-							String newMedal = "";
-														
-							if (notes[j].startsWith("Axis: ")) {
-								if (start == 1) {
-									//if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
-									//		notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
-									//{
-										medals = notes[j].replaceAll("Axis: ([0-9\\*]{1,3}).*", "$1");
-									//}
-								} else {
-									j++;
-									int limit = 0;
-									while (!notes[j].startsWith("Allies: ") && limit < 10) {
-										limit++;
-										j++;
-									}
-									if (notes[j].startsWith("Allies: ")) {
-									//j++;
-									//if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
-									//		notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
-									//{
-										medals = notes[j].replaceAll("Allies: ([0-9\\*]{1,3}).*", "$1");
-									}
+							if (subtitle != null) {
+								String stitle = nthfield(subtitle, "\\(", 2);
+								stitle = stitle.substring(0, stitle.length() - 1);
+	
+								if (stitle.toLowerCase().startsWith("west")) {
+									front = "Western";
+								} else if (stitle.toLowerCase().startsWith("east")) {
+									front = "Eastern";
+								} else if (stitle.toLowerCase().startsWith("med")) {
+									front = "Mediterranean";
+								} else if (stitle.toLowerCase().startsWith("pac")) {
+									front = "Pacific";
 								}
-							} else {
-								if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
-										notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
-								{
-									medals = notes[j].replaceAll("([0-9\\*]{1,3}).*", "$1");
+	
+								int id = subtitle.lastIndexOf("#");
+								if (id > -1 && (id+1) < subtitle.length()) {
+									dowid = subtitle.substring(id + 1);
+									dowid = dowid.substring(0, dowid.length() - 1);
 								}
 							}
-							
-							//if (brief[i].endsWith(" medal.") || brief[i].endsWith(" medals.")) {
-							if (medals.length() > 0) {
-								//medals = brief[i].replaceAll("([0-9]{1,2}).*?\\.", "$1");
-								newMedal = medalForFlag(newFlag);
-								if (newMedal.length() > 0)
-									medal = newMedal;
-								//i++;
-							}
-
-							briefing += "<td valign=\"top\" width=\"120\">";
-							briefing += "<img src=\"flag-"+flag+".png\" /></td>";
-							briefing += "<td width=\"260\"><span class=\"nationtitle"+start+"\">"+nation.replace("/", ", ")+"</span><br>";
-							briefing += "<table border=\"0\" valign=\"top\"><tr valign=\"top\"><td>";
-							briefing += "<img src=\"mm_preview_command_card.jpg\" />";
-							briefing += "</td><td><span class=\"cards\">"+cards+"</span></td>";
-							if (medals.length() > 0) {
-								briefing += "<td width=\"20\">&nbsp;</td>";
-								briefing += "<td><img src=\"" + medal + ".png\" /></td>";
-								briefing += "<td><span class=\"cards\">" + medals + "</span></td>";
-							}
-							briefing += "</tr></table>";
-							
-							blank = 0;
-
-							while (i < brief.length && blank == 0) {
-								if (brief[i].length() == 0) {
-									blank++;
-								} else {
-									if (brief[i].startsWith("You move first.")) {
-										briefing += "<table border=\"0\" valign=\"middle\"><tr valign=\"middle\"><td>";
-										briefing += "<img src=\"mm_preview_first.png\" />";
-										briefing += "</td><td>"+brief[i]+"</td></tr></table>";
-									} else {
-										briefing += brief[i] + "<br>";
-									}
+	
+							html += "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" valign=\"bottom\"><td><h1>" + title + "</h1></td>\n";
+							html += "<td align=\"right\"><h2>" + date + "</h2></td></table>\n";
+							if (front.length() > 0 || operation.length() > 0 || maintitle2.length() > 0) {
+								html += "<table cellspacing=\"0\" cellpadding=\"0\" valign=\"bottom\">";
+								if (front.length() > 0) {
+									html += "<td><h2 class=\"front\">" + front + "&nbsp;&nbsp;</h2></td>\n";
 								}
-								i++;
+								if (operation.length() > 0) {
+									html += "<td><h2>" + operation + "&nbsp;&nbsp;</h2></td>\n";
+								}
+								if (maintitle2.length() > 0) {
+									html += "<td><h2 class=\"subtitle\">" + maintitle2 + "</h2></td>\n";
+								}
+								html += "</table>\n";
 							}
-							briefing += "</td>";
+						} else {
+							iter = 2;
 						}
-												
-						briefing += "</tr></table><br>";
-						
-						iter = local;
-						html += briefing;
-						
-					} catch (Exception ex) {
-						StringWriter sw = new StringWriter();
-						PrintWriter pw = new PrintWriter(sw);
-						ex.printStackTrace(pw);
-						
-						chat("ERROR: Problem parsing briefing. Please report. " + ex.getMessage() + "\n" + sw.toString() + "\n\n" + html);
-						
-						iter++;
-						blank = 0;
-
+	
+						html += "<br>";
+						html += "<h3>Historical Background</h3>";
+	
+						int blank = 0;
+	
 						while (iter < notes.length && blank < 2) {
 							if (notes[iter].length() == 0)
 								blank++;
 							else
 								blank = 0;
-
+	
+							if (blank < 2)
+								html += notes[iter] + "<br>";
+	
+							iter++;
+						}
+	
+						html += "<h3>Briefing</h3>";
+	
+						try {
+							String briefing = "<table width=\"100%\" cols=\"4\" border=\"1\">";
+							briefing += "<tr valign=\"top\">";
+							
+							int local = iter;
+							local++;
+							List<String> briefList = new ArrayList<String>();
+							
+							blank = 0;
+	
+							while (local < notes.length && blank < 2) {
+								if (notes[local].length() == 0)
+									blank++;
+								else
+									blank = 0;
+	
+								if (blank < 2)
+									briefList.add(notes[local]);
+	
+								local++;
+							}
+							
+							String[] brief = briefList.toArray(new String[briefList.size()]);
+							
+							int i = 0;
+							
+							for (int start = 1; start <= 2; start++) {
+								String nation = "";
+								String flag = "";
+								String medal = "";
+								switch (start) {
+								case 1:
+									nation = "Axis";
+									flag = "germany";
+									medal = "medal-axis";
+									break;
+								case 2:
+									nation = "Allies";
+									flag = "us";
+									medal = "medal-allies";
+								}
+								if (brief[i].contains("]:")) {
+									nation = nthfield(nthfield(brief[i], "\\[", 2), "\\]: ", 1);
+								}
+								brief[i] = nthfield(brief[i], ": ", 2);
+	
+								String cards = brief[i].replaceAll("Take ([0-9]{1,2}).*", "$1");
+								int period = brief[i].indexOf(".");
+								if (period == -1 || (period+1) == brief[i].length()) {
+									brief[i] = "";
+								} else {
+									brief[i] = brief[i].substring(period+1).trim();
+								}
+								
+								String cc = "";
+								
+								if (brief[i].length() > 0)
+								{
+									cc = brief[i].replaceAll("Take ([0-9]{1,2}) (\\w+) Combat card.*", "$1/$2");
+									period = brief[i].indexOf(".");
+									if (!cc.equals(brief[i]))
+									{
+										cc = cc.toLowerCase();
+										if (period == -1 || (period+1) == brief[i].length()) {
+											brief[i] = "";
+										} else {
+											brief[i] = brief[i].substring(period+1).trim();
+										}
+									}
+								}
+	
+								if (brief[i].length() == 0)
+									i++;
+								
+								String newFlag = flagForNation(nation);
+								if (newFlag.length() > 0)
+									flag = newFlag;
+								
+								// find victory medals
+								int j = iter + 1;
+								blank = 0;
+								
+								while (j < notes.length && blank < 2) {
+									if (notes[j].length() == 0)
+										blank++;
+									else
+										blank = 0;
+									j++;
+								}
+								j++;
+								
+								String medals = "";
+								String newMedal = "";
+															
+								if (notes[j].startsWith("Axis: ")) {
+									if (start == 1) {
+										//if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
+										//		notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
+										//{
+											medals = notes[j].replaceAll("Axis: ([0-9\\*]{1,3}).*", "$1");
+										//}
+									} else {
+										j++;
+										int limit = 0;
+										while (!notes[j].startsWith("Allies: ") && limit < 10) {
+											limit++;
+											j++;
+										}
+										if (notes[j].startsWith("Allies: ")) {
+										//j++;
+										//if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
+										//		notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
+										//{
+											medals = notes[j].replaceAll("Allies: ([0-9\\*]{1,3}).*", "$1");
+										}
+									}
+								} else {
+									if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
+											notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
+									{
+										medals = notes[j].replaceAll("([0-9\\*]{1,3}).*", "$1");
+									}
+								}
+								
+								//if (brief[i].endsWith(" medal.") || brief[i].endsWith(" medals.")) {
+								if (medals.length() > 0) {
+									//medals = brief[i].replaceAll("([0-9]{1,2}).*?\\.", "$1");
+									newMedal = medalForFlag(newFlag);
+									if (newMedal.length() > 0)
+										medal = newMedal;
+									//i++;
+								}
+	
+								briefing += "<td valign=\"top\" width=\"120\">";
+								briefing += "<img src=\"flag-"+flag+".png\" /></td>";
+								briefing += "<td width=\"260\"><span class=\"nationtitle"+start+"\">"+nation.replace("/", ", ")+"</span><br>";
+								briefing += "<table border=\"0\" valign=\"top\">";
+								briefing += "<tr valign=\"top\"><td>";
+								briefing += "<img src=\"mm_preview_command_card.jpg\" />";
+								briefing += "</td><td><span class=\"cards\">"+cards+"</span></td>";
+								if (cc.length() > 0)
+								{
+									String[] ccparts = cc.split("/");
+									if (ccparts.length > 1)
+									{
+										String ccimage = "UC-tiny";
+										if (ccparts[1].equals("urban"))
+											ccimage = "UC-tiny";
+										else if (ccparts[1].equals("winter"))
+											ccimage = "WC-tiny";
+										else if (ccparts[1].equals("jungle"))
+											ccimage = "JC-tiny";
+										else if (ccparts[1].equals("desert"))
+											ccimage = "DC-tiny";
+										
+										briefing += "<td width=\"20\">&nbsp;</td>";
+										briefing += "<td><img src=\"" + ccimage + ".png\" /></td>";
+										briefing += "<td><span class=\"cards\">" + ccparts[0] + "</span></td>";
+									}
+								}
+								if (medals.length() > 0) {
+									briefing += "<td width=\"20\">&nbsp;</td>";
+									briefing += "<td><img src=\"" + medal + ".png\" /></td>";
+									briefing += "<td><span class=\"cards\">" + medals + "</span></td>";
+								}
+								briefing += "</tr>";
+								briefing += "</table>";
+								
+								blank = 0;
+	
+								while (i < brief.length && blank == 0) {
+									if (brief[i].length() == 0) {
+										blank++;
+									} else {
+										if (brief[i].startsWith("You move first.")) {
+											briefing += "<table border=\"0\" valign=\"middle\"><tr valign=\"middle\"><td>";
+											briefing += "<img src=\"mm_preview_first.png\" />";
+											briefing += "</td><td>"+brief[i]+"</td></tr></table>";
+										} else {
+											briefing += brief[i] + "<br>";
+										}
+									}
+									i++;
+								}
+								briefing += "</td>";
+							}
+													
+							briefing += "</tr></table><br>";
+							
+							iter = local;
+							html += briefing;
+							
+						} catch (Exception ex) {
+							StringWriter sw = new StringWriter();
+							PrintWriter pw = new PrintWriter(sw);
+							ex.printStackTrace(pw);
+							
+							chat("ERROR: Problem parsing briefing. Please report. " + ex.getMessage() + "\n" + sw.toString() + "\n\n" + html);
+							
+							iter++;
+							blank = 0;
+	
+							while (iter < notes.length && blank < 2) {
+								if (notes[iter].length() == 0)
+									blank++;
+								else
+									blank = 0;
+	
+								if (blank < 2)
+									html += filterCompendium(notes[iter]) + "<br>";
+	
+								iter++;
+							}
+						}
+						
+						html += "<h3>Conditions of Victory</h3>";
+	
+						iter++;
+						blank = 0;
+	
+						while (iter < notes.length && blank < 2) {
+							if (notes[iter].length() == 0)
+								blank++;
+							else
+								blank = 0;
+	
 							if (blank < 2)
 								html += filterCompendium(notes[iter]) + "<br>";
-
+	
 							iter++;
 						}
-					}
-					
-					html += "<h3>Conditions of Victory</h3>";
-
-					iter++;
-					blank = 0;
-
-					while (iter < notes.length && blank < 2) {
-						if (notes[iter].length() == 0)
-							blank++;
-						else
-							blank = 0;
-
-						if (blank < 2)
-							html += filterCompendium(notes[iter]) + "<br>";
-
+						
+						html += "<h3>Special Rules</h3>";
+						
 						iter++;
-					}
-
-					html += "<h3>Special Rules</h3>";
-
-					iter++;
-
-					while (iter < notes.length && !multiMap) {
-						if (notes[iter].equals("==========***=========="))
+						blank = 0;
+	
+						while (iter < notes.length && !multiMap && blank < 2) {
+							if (notes[iter].length() > 0 && notes[iter].charAt(0) == '#') {
+								
+							} else if (notes[iter].equals("==========***==========")) {
+								multiMap = true;
+								iter++;
+							} else {
+								if (notes[iter].length() == 0)
+								{
+									blank++;
+								} else {
+									blank = 0;
+								}
+								if (blank < 2)
+									html += filterCompendium(notes[iter]) + "<br>";
+							}
+							iter++;
+						}
+	
+						if (iter < notes.length)
 						{
-							multiMap = true;
+							html += "<h3>Notes</h3>";
+						
 							iter++;
-						} else {
-							html += filterCompendium(notes[iter]) + "<br>";
+		
+							while (iter < notes.length && !multiMap) {
+								if (notes[iter].length() > 0 && notes[iter].charAt(0) == '#') {
+									
+								} else if (notes[iter].equals("==========***=========="))
+								{
+									multiMap = true;
+									iter++;
+								} else {
+									html += filterCompendium(notes[iter]) + "<br>";
+								}
+								iter++;
+							}
 						}
-						iter++;
-					}
-
-					if (dowid.length() > 0) {
-						//html += "<a class=\"online\" href=\"http://www.daysofwonder.com/memoir44/en/editor/view/?id=" + dowid + "\">View Online</a><br>";
-						//html += subtitle + "<br>";
-						html += "<br><table width=\"100%\" align=\"center\"><td align=\"center\"><a href=\"http://www.daysofwonder.com/memoir44/en/editor/view/?id=" + dowid + "\"><img src=\"m44-www.png\" /></a></td></table>\n";
-					}
-
-					if (multiMap) {
-						html += "<hr><br>";
-					}
-
-				} while (multiMap);
-
-				//TODO: use subtitle for DoW ID and Front: html += "<br>" + subtitle + "<br>";
-				html += "</body>\n</html>\n";
+	
+						if (dowid.length() > 0) {
+							//html += "<a class=\"online\" href=\"http://www.daysofwonder.com/memoir44/en/editor/view/?id=" + dowid + "\">View Online</a><br>";
+							//html += subtitle + "<br>";
+							html += "<br><table width=\"100%\" align=\"center\"><td align=\"center\"><a href=\"http://www.daysofwonder.com/memoir44/en/editor/view/?id=" + dowid + "\"><img src=\"m44-www.png\" /></a></td></table>\n";
+						}
+	
+						if (multiMap) {
+							html += "<hr><br>";
+						}
+	
+					} while (multiMap);
+	
+					//TODO: use subtitle for DoW ID and Front: html += "<br>" + subtitle + "<br>";
+					html += "</body>\n</html>\n";
+				}
 			}
 
 			jEditorPane.setText(html);
 
 			jEditorPane.setSelectionStart(0);
-			jEditorPane.setSelectionEnd(0); 
+			jEditorPane.setSelectionEnd(0);
 
 			Rectangle visible = jEditorPane.getVisibleRect();
 			visible.y = 0;
@@ -709,6 +779,10 @@ implements GameComponent, CommandEncoder {
 			return "scotland";
 		if (nation.equals("india"))
 			return "india";
+		if (nation.equals("south africa"))
+			return "southafrica";
+		if (nation.equals("yugoslavia") || nation.equals("yugoslav resistance") || nation.equals("yugoslav partisans"))
+			return "yugoslavia";
 		
 		if (nation.equals("nationalist spain")) return "spainrep";
 		if (nation.equals("republican spain")) return "spainnat";
@@ -717,9 +791,10 @@ implements GameComponent, CommandEncoder {
 		
 		if ( (nation.equals("canada")) || (nation.equals("finland"))
 				|| (nation.equals("slovakia")) || (nation.equals("italy")) || (nation.equals("poland")) || (nation.equals("belgium"))
-				|| (nation.equals("romania")) || (nation.equals("vichy france")) || (nation.equals("hungary")) || (nation.equals("yugoslavia"))
+				|| (nation.equals("romania")) || (nation.equals("vichy france")) || (nation.equals("hungary"))
 				|| (nation.equals("australia")) || (nation.equals("albania")) || (nation.equals("norway")) || (nation.equals("greece"))
-				|| (nation.equals("thailand") || (nation.equals("croatia")))
+				|| (nation.equals("thailand")) || (nation.equals("croatia")) || (nation.equals("philippines")) || (nation.equals("bulgaria"))
+				|| (nation.equals("southafrica"))
 				) return nation;
 
 		return "";
@@ -756,10 +831,16 @@ implements GameComponent, CommandEncoder {
 		input = input.replaceAll("(?!>)(Permanent Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Permanent Majority Medal Objective[s]? \\(Turn Start\\))", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Permanent Majority Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
+		input = input.replaceAll("(?!>)(Temporary Sole Control, Last to Occupy Medal Objective[s]? \\\\(Turn Start\\\\))", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Temporary Sole Control, Last to Occupy Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
+		input = input.replaceAll("(?!>)(Temporary Sole Control Medal Objective[s]? \\\\(Turn Start\\\\))", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Temporary Sole Control Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
+		input = input.replaceAll("(?!>)(Last to Occupy Medal Objective[s]? \\(Turn Start\\))", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Last to Occupy Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
+		input = input.replaceAll("(?!>)(Sole Control Medal Objective[s]? \\(Turn Start\\))", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Sole Control Medal Objective[s]?)", "<span class=\"objective\">$1</span>");
+		input = input.replaceAll("(?!>)(Sudden Death Objective Exit( hex)?(es)?)", "<span class=\"objective\">$1</span>");
+		input = input.replaceAll("(?!>)(Sudden Death Objective[s]? \\(Turn Start\\))", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Sudden Death Objective[s]?)", "<span class=\"objective\">$1</span>");
 		
 		input = input.replaceAll("Axis [pP]layer \\[(.*?)\\]", "Axis Player \\[<span class=\"nation1\">$1</span>\\]");

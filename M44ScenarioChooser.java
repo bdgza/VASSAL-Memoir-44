@@ -82,29 +82,29 @@ public class M44ScenarioChooser extends JDialog {
 	
 	private JPanel jpFront;
 	private JCheckBox[] jcFront;
-	private boolean[] filterFronts = new boolean[4];
 	private String[] frontNames = {"Western", "Eastern", "Pacific", "Mediterranean"};
+	private boolean[] filterFronts = new boolean[frontNames.length + 1];
 	
 	private JPanel jpExpansions;
 	//private JCheckBox[] jcExpansions;
 	private JComboBox jcExpansions;
-	private boolean[] filterExpansions = new boolean[20];
 	private int indexAirPackExpansion = -1;
-	private String[] expansionNames = {"Base Game", "Terrain Pack", "Eastern", "Pacific", "Air Pack", "Mediterranean", "Hedgerow Hell", "Tigers in the Snow", "Sword of Stalingrad", "Disaster at Dieppe", "Breakthrough", "Winter Wars", "Campaign Book Vol. 1", "Campaign Book Vol. 2", "Vercors Campaign", "Audie Murphy", "Invasion of Crete", "D-Day Landings"};
-	private String[] expansionCodes = {"ST", "TP", "EF", "PT", "AA", "MT", "HH", "TS", "SS", "DD", "BT", "WW", "CB", "C2", "VC", "DM", "IC", "DY"};
-	private String[] expansionMenu = {"All", "Base Game", "Terrain Pack", "Eastern", "Pacific", "Air Pack", "Mediterranean", "Hedgerow Hell", "Tigers in the Snow", "Sword of Stalingrad", "Disaster at Dieppe", "Breakthrough", "Winter Wars", "Campaign Book Vol. 1", "Campaign Book Vol. 2", "Vercors Campaign", "Audie Murphy", "Invasion of Crete", "D-Day Landings"};
+	private String[] expansionNames = {"Base Game", "Terrain Pack", "Eastern", "Pacific", "Air Pack", "Mediterranean", "Hedgerow Hell", "Tigers in the Snow", "Sword of Stalingrad", "Disaster at Dieppe", "Breakthrough", "Winter Wars", "Campaign Book Vol. 1", "Campaign Book Vol. 2", "Vercors Campaign", "Audie Murphy", "Invasion of Crete", "D-Day Landings", "Through Jungle and Desert"};
+	private String[] expansionCodes = {"ST", "TP", "EF", "PT", "AA", "MT", "HH", "TS", "SS", "DD", "BT", "WW", "CB", "C2", "VC", "DM", "IC", "DY", "JD"};
+	private String[] expansionMenu = {"All", "Base Game", "Terrain Pack", "Eastern", "Pacific", "Air Pack", "Mediterranean", "Hedgerow Hell", "Tigers in the Snow", "Sword of Stalingrad", "Disaster at Dieppe", "Breakthrough", "Winter Wars", "Campaign Book Vol. 1", "Campaign Book Vol. 2", "Vercors Campaign", "Audie Murphy", "Invasion of Crete", "D-Day Landings", "Through Jungle and Desert"};
+	private boolean[] filterExpansions = new boolean[expansionNames.length + 2];
 	
 	private JPanel jpType;
 	private JCheckBox[] jcType;
-	private boolean[] filterTypes = new boolean[15];
 	private String breaklordLabel = "OverTrough";
-	private String[] typeNames = {"Inland", "Beach", "Winter", "Desert", "BT-Inland", "BT-Beach", "BT-Winter", "BT-Desert", "OL-Inland", "OL-Beach", "OL-Winter", "OL-Desert", "BT-Extended", breaklordLabel, "MultiMap"};
+	private String[] typeNames = {"Inland", "Beach", "Winter", "Desert", "BT-Inland", "BT-Beach", "BT-Winter", "BT-Desert", "OL-Inland", "OL-Beach", "OL-Winter", "OL-Desert", "BT-Extended", breaklordLabel, "MultiMap", "HexMap"};
+	private boolean[] filterTypes = new boolean[typeNames.length + 1];
 	
 	private JPanel jpYear;
 	private JCheckBox[] jcYear;
-	private boolean[] filterYears = new boolean[11];
 	private String[] yearNames = {"1936", "1937", "1938", "1939", "1940", "1941", "1942", "1943", "1944", "1945"};
 	private String[] monthNames = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+	private boolean[] filterYears = new boolean[yearNames.length + 1];
 	
 	private JCheckBox jcOfficialScenarios;
 	private boolean filterOfficial = false;
@@ -155,8 +155,8 @@ public class M44ScenarioChooser extends JDialog {
 		width = dim.width - 50;
 		height = dim.height - 30;
 		
-		if (width > 1650)
-			width = 1650;
+		if (width > 1900)
+			width = 1900;
 		
 		this.setTitle("Choose a Memoir '44 Scenario");
 		this.setSize(width, height);
@@ -191,6 +191,30 @@ public class M44ScenarioChooser extends JDialog {
 			}
 		} while (it.hasNext());
 		
+		// process classifieds
+		
+		for (int i = 0; i < setups.size(); i++)
+		{
+			M44Setup setup1 = setups.get(i);
+			
+			if (setup1.classified)
+			{
+				for (int j = 0; j < setups.size(); j++)
+				{
+					M44Setup setup2 = setups.get(j);
+					
+					if (!setup1.equals(setup2) && setup1.fileName.equals(setup2.fileName))
+					{
+						setups.remove(i);
+						i--;
+						break;
+					}
+				}
+			}
+		}
+		
+		// check for missing files
+		
 		if (!checkedSetups) {
 			Runnable checkRunnable = new Runnable() {
 				public void run() {
@@ -200,29 +224,32 @@ public class M44ScenarioChooser extends JDialog {
 					for (int i = 0; i < setups.size(); i++) {
 						M44Setup setup = setups.get(i);
 						
-						// test to see if this setup is valid
-						try {
-							if (dataArchive.getURL(setup.getFileName()) == null) {
+						if (!setup.classified)
+						{
+							// test to see if this setup is valid
+							try {
+								if (dataArchive.getURL(setup.getFileName()) == null) {
+									//WriteLine("Error in module, could not find pre-defined setup file " + setup.getFileName());
+									ErrorDialog.dataError(new BadDataReport(Resources.getString("Error.not_found", "Setup"), setup.getFileName()));
+								}
+							} catch (Exception e1) {
 								//WriteLine("Error in module, could not find pre-defined setup file " + setup.getFileName());
-								ErrorDialog.dataError(new BadDataReport(Resources.getString("Error.not_found", "Setup"), setup.getFileName()));
+								ErrorDialog.dataError(new BadDataReport(Resources.getString("Error.not_found", "Setup"), setup.getFileName(), e1));
 							}
-						} catch (Exception e1) {
-							//WriteLine("Error in module, could not find pre-defined setup file " + setup.getFileName());
-							ErrorDialog.dataError(new BadDataReport(Resources.getString("Error.not_found", "Setup"), setup.getFileName(), e1));
-						}
-						
-						String imageName = setup.fileName + ".jpg";
-						
-						try {
-							SourceOp result = Op.load(imageName);
-							if (result == null || result.getHeight() != 500) {
+							
+							String imageName = setup.fileName + ".jpg";
+							
+							try {
+								SourceOp result = Op.load(imageName);
+								if (result == null || result.getHeight() != 500) {
+									//WriteLine("Error in module, could not find proper pre-defined image preview file " + imageName);
+									//WriteLine(Integer.toString(result.getHeight()));
+									ErrorDialog.dataError(new BadDataReport(Resources.getString("Error.not_found", "Image with correct size"), imageName));
+								}
+							} catch (Exception e1) {
 								//WriteLine("Error in module, could not find proper pre-defined image preview file " + imageName);
-								//WriteLine(Integer.toString(result.getHeight()));
-								ErrorDialog.dataError(new BadDataReport(Resources.getString("Error.not_found", "Image with correct size"), imageName));
+								ErrorDialog.dataError(new BadDataReport(Resources.getString("Error.not_found", "Image"), imageName, e1));
 							}
-						} catch (Exception e1) {
-							//WriteLine("Error in module, could not find proper pre-defined image preview file " + imageName);
-							ErrorDialog.dataError(new BadDataReport(Resources.getString("Error.not_found", "Image"), imageName, e1));
 						}
 					}
 				}
@@ -472,9 +499,17 @@ public class M44ScenarioChooser extends JDialog {
 				String imageName = "";
 				
 				if (row >= 0)
+				{
 					// load preview pane image
-					if (scenarioModel.getRow(row).fileName != null)
-						imageName = scenarioModel.getRow(row).getAttributeValueString(M44Setup.FILE) + ".jpg";
+					M44Setup setup = scenarioModel.getRow(row);
+					if (setup.fileName != null)
+					{
+						if (!setup.classified)
+							imageName = scenarioModel.getRow(row).getAttributeValueString(M44Setup.FILE) + ".jpg";
+						else
+							imageName = "mm_classified.jpg";
+					}
+				}
 				
 				if (imageName.length() > 0)
 					previewImage = Op.load(imageName).getImage();
@@ -494,7 +529,7 @@ public class M44ScenarioChooser extends JDialog {
 				}
 			}
 		});
-		int[] widths = {85, 0, 200, 105, 60, 350, 120, 105};
+		int[] widths = {85, 0, 0, 0, 105, 70, 0, 120, 105};
 		
 		for (int i = 0; i < widths.length; i++)
 			if (widths[i] > 0) {
@@ -822,10 +857,13 @@ public class M44ScenarioChooser extends JDialog {
 					String name = item.getConfigureName();
 					String set = "";
 					if (item.set != null) set = item.set;
+					String tournament = "";
+					if (item.tournament != null) tournament = item.tournament;
 					String operation = ""; if (item.operation != null) operation = item.operation;
 					String author = ""; if (item.author != null) author = item.author;
 					
 					if (name.toLowerCase().indexOf(filterText) >= 0) keepItem = true;
+					if (tournament.toLowerCase().indexOf(filterText) >= 0) keepItem = true;
 					if (set.toLowerCase().indexOf(filterText) >= 0) keepItem = true;
 					if (operation.toLowerCase().indexOf(filterText) >= 0) keepItem = true;
 					if (author.toLowerCase().indexOf(filterText) >= 0) keepItem = true;
@@ -892,14 +930,17 @@ public class M44ScenarioChooser extends JDialog {
 	}
 
 	protected void launchSetup(M44Setup setup) {
-		if (setup.launch())
-			thisFrame.dispose();
+		if (setup.classified)
+			JOptionPane.showMessageDialog(null, "This scenario can not be loaded because it is classified.\n\nClassified scenarios are usually official scenarios published in\nprint but not on the Web. This is why their content is not\ndisplayed. However, you may still rate them and write After\nAction Reports.", "Classified Scenario", JOptionPane.INFORMATION_MESSAGE);
+		else
+			if (setup.launch())
+				thisFrame.dispose();
 	}
 
 	private class ScenarioTableModel extends AbstractTableModel {
 		private static final long serialVersionUID = 1L;
 		private Vector<M44Setup> data = new Vector<M44Setup>();
-		private String[] columnNames = {"Type", "Title", "Set", "Front", "Date", "Operation", "Author", "Code"};
+		private String[] columnNames = {"Type", "Title", "Set", "Tournament", "Front", "Date", "Operation", "Author", "Code"};
 		
 		protected int sortCol = 1;
 		protected boolean isSortAsc = true;
@@ -917,7 +958,7 @@ public class M44ScenarioChooser extends JDialog {
 		}
 		
 		public int getColumnCount() {
-			return 8;
+			return 9;
 		}
 
 		public int getRowCount() {
@@ -941,16 +982,21 @@ public class M44ScenarioChooser extends JDialog {
 				if ((data.get(row).set == null) || (data.get(row).set.length() == 0))
 					return "";
 				else
-					return "["+data.get(row).set+"]";
+					return data.get(row).set;
 			case 3:
-				return data.get(row).front;
+				if ((data.get(row).tournament == null) || (data.get(row).tournament.length() == 0))
+					return "";
+				else
+					return data.get(row).tournament;
 			case 4:
-				return data.get(row).getDate();
+				return data.get(row).front;
 			case 5:
-				return data.get(row).operation;
+				return data.get(row).getDate();
 			case 6:
-				return data.get(row).author;
+				return data.get(row).operation;
 			case 7:
+				return data.get(row).author;
+			case 8:
 				String code = "";
 				if (data.get(row).m44code != null)
 					code = data.get(row).m44code;
@@ -991,7 +1037,7 @@ public class M44ScenarioChooser extends JDialog {
 		    	if (modelIndex < 0)
 		    		return;
 		    	if (sortCol == modelIndex) {
-		    		if ((sortCol == 7) && !isSortAsc)
+		    		if ((sortCol == 8) && !isSortAsc)
 		    			sortByID = !sortByID;
 		    		isSortAsc = !isSortAsc;
 		    	} else {
@@ -1038,11 +1084,19 @@ public class M44ScenarioChooser extends JDialog {
 							set2 = o2.set;
 						result = set1.compareTo(set2); break;
 					case 3:
+						String tournament1 = "";
+						String tournament2 = "";
+						if (o1.tournament != null)
+							tournament1 = o1.tournament;
+						if (o2.tournament != null)
+							tournament2 = o2.tournament;
+						result = tournament1.compareTo(tournament2); break;
+					case 4:
 						int f1 = getFrontNumeric(o1.front);
 						int f2 = getFrontNumeric(o2.front);
 						result = f1 - f2;
 						break;
-					case 4:
+					case 5:
 						result = o1.year.compareTo(o2.year);
 						if (result == 0) {
 							int m1 = getNumericMonth(o1.month);
@@ -1051,9 +1105,9 @@ public class M44ScenarioChooser extends JDialog {
 							result = m1 - m2;
 						}
 						 break;
-					case 5:
-						result = o1.operation.compareTo(o2.operation); break;
 					case 6:
+						result = o1.operation.compareTo(o2.operation); break;
+					case 7:
 						if (o1.author == "" && o2.author != "")
 							result = 1;
 						else if (o1.author != "" && o2.author == "")
@@ -1061,7 +1115,7 @@ public class M44ScenarioChooser extends JDialog {
 						else
 							result = o1.author.toLowerCase().compareTo(o2.author.toLowerCase());
 						break;
-					case 7:
+					case 8:
 						String code1 = o1.m44code;
 						String code2 = o2.m44code;
 						int c1 = code1.length();

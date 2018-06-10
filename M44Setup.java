@@ -30,6 +30,7 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 	public static final String FILE = "file"; //$NON-NLS-1$
 	public static final String FRONT = "front"; //$NON-NLS-1$
 	public static final String OPERATION = "operation"; //$NON-NLS-1$
+	public static final String TOURNAMENT = "tournament"; //$NON-NLS-1$
 	public static final String SET = "set"; //$NON-NLS-1$
 	public static final String MONTH = "month"; //$NON-NLS-1$
 	public static final String YEAR = "year"; //$NON-NLS-1$
@@ -38,10 +39,12 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 	public static final String TYPE = "type"; //$NON-NLS-1$
 	public static final String OFFICIAL = "official"; //$NON-NLS-1$
 	public static final String AUTHOR = "author"; //$NON-NLS-1$
+	public static final String CLASSIFIED = "classified"; //$NON-NLS-1$
 
 	protected String fileName;
 	protected String front;
 	protected String operation;
+	protected String tournament;
 	protected String set;
 	protected String month;
 	protected String year;
@@ -50,6 +53,7 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 	protected Boolean official;
 	protected String scentype;
 	protected String author = "";
+	protected Boolean classified = false;
 
 	protected AbstractAction launchAction;
 
@@ -67,7 +71,7 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 	public String[] getAttributeDescriptions() {
 		return new String[]{
 				Resources.getString(Resources.NAME_LABEL),
-				"Files: ","Board Type: ", "Front: ","Operation: ","Set: ","Month (mmm): ","Year (yy): ","Memoir '44 Code: ","DOW ID #","Official","Author"
+				"Files: ","Board Type: ", "Front: ","Operation: ","Tournament: ","Set: ","Month (mmm): ","Year (yy): ","Memoir '44 Code: ","DOW ID #","Official: ","Author: ", "Classified: "
 		};
 	}
 
@@ -83,8 +87,10 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 				String.class,
 				String.class,
 				String.class,
+				String.class,
 				Boolean.class,
-				String.class
+				String.class,
+				Boolean.class
 		};
 	}
 
@@ -95,13 +101,15 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 				TYPE,
 				FRONT,
 				OPERATION,
+				TOURNAMENT,
 				SET,
 				MONTH,
 				YEAR,
 				M44CODE,
 				DOWID,
 				OFFICIAL,
-				AUTHOR
+				AUTHOR,
+				CLASSIFIED
 		};
 	}
 
@@ -120,6 +128,9 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 		}
 		else if (OPERATION.equals(key)) {
 			return operation;
+		}
+		else if (TOURNAMENT.equals(key)) {
+			return tournament;
 		}
 		else if (SET.equals(key)) {
 			return set;
@@ -141,6 +152,9 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 		}
 		else if (AUTHOR.equals(key)) {
 			return author;
+		}
+		else if (CLASSIFIED.equals(key)) {
+			return String.valueOf(classified);
 		}
 		else {
 			return null;
@@ -168,6 +182,10 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 		else if (OPERATION.equals(key)) {
 			if (value instanceof String)
 				operation = (String)value;
+		}
+		else if (TOURNAMENT.equals(key)) {
+			if (value instanceof String)
+				tournament = (String)value;
 		}
 		else if (SET.equals(key)) {
 			if (value instanceof String)
@@ -197,6 +215,11 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 		else if (AUTHOR.equals(key)) {
 			if (value instanceof String)
 				author = (String)value;
+		}
+		else if (CLASSIFIED.equals(key)) {
+			if (value instanceof String) {
+				classified = Boolean.valueOf((String) value);
+			}
 		}
 	}
 	
