@@ -96,7 +96,7 @@ public class M44ScenarioChooser extends JDialog {
 	
 	private JPanel jpType;
 	private JCheckBox[] jcType;
-	private String breaklordLabel = "OverTrough";
+	private String breaklordLabel = "OverThrough";
 	private String[] typeNames = {"Inland", "Beach", "Winter", "Desert", "BT-Inland", "BT-Beach", "BT-Winter", "BT-Desert", "OL-Inland", "OL-Beach", "OL-Winter", "OL-Desert", "BT-Extended", breaklordLabel, "MultiMap", "HexMap"};
 	private boolean[] filterTypes = new boolean[typeNames.length + 1];
 	
