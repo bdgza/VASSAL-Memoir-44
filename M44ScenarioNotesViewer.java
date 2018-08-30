@@ -323,11 +323,11 @@ implements GameComponent, CommandEncoder {
 					}
 				}
 				
-				if (notes[0].startsWith("<html>"))
+				if (notes.length > 0 && notes[0].startsWith("<html>"))
 				{
 					html = scenarioNotes;
 				}
-				else
+				else if (notes.length > 0)
 				{
 					lastmaintitle = notes[0];
 					//}
@@ -419,6 +419,11 @@ implements GameComponent, CommandEncoder {
 							iter = 2;
 						}
 	
+						if (iter >= notes.length || !notes[iter-1].toLowerCase().startsWith("historical background"))
+						{
+							chat("Warning: did not encounter Historical Background section where expected. Please fix.");
+						}
+						
 						html += "<br>";
 						html += "<h3>Historical Background</h3>";
 	
@@ -436,6 +441,11 @@ implements GameComponent, CommandEncoder {
 							iter++;
 						}
 	
+						if (iter >= notes.length || !notes[iter].trim().toLowerCase().startsWith("briefing"))
+						{
+							chat("Warning: did not encounter Briefing section where expected. Please fix.");
+						}
+						
 						html += "<h3>Briefing</h3>";
 	
 						try {
@@ -464,7 +474,7 @@ implements GameComponent, CommandEncoder {
 							
 							int i = 0;
 							
-							for (int start = 1; start <= 2; start++) {
+							for (int start = 1; i < brief.length && start <= 2; start++) {
 								String nation = "";
 								String flag = "";
 								String medal = "";
@@ -531,35 +541,40 @@ implements GameComponent, CommandEncoder {
 								
 								String medals = "";
 								String newMedal = "";
-															
-								if (notes[j].startsWith("Axis: ")) {
-									if (start == 1) {
-										//if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
-										//		notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
-										//{
-											medals = notes[j].replaceAll("Axis: ([0-9\\*]{1,3}).*", "$1");
-										//}
-									} else {
-										j++;
-										int limit = 0;
-										while (!notes[j].startsWith("Allies: ") && limit < 10) {
-											limit++;
+								
+								if (j < notes.length)
+								{
+									if (notes[j].startsWith("Axis: ")) {
+										if (start == 1) {
+											//if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
+											//		notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
+											//{
+												medals = notes[j].replaceAll("Axis: ([0-9\\*]{1,3}).*", "$1");
+											//}
+										} else {
 											j++;
+											int limit = 0;
+											while (!notes[j].startsWith("Allies: ") && limit < 10) {
+												limit++;
+												j++;
+											}
+											if (notes[j].startsWith("Allies: ")) {
+											//j++;
+											//if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
+											//		notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
+											//{
+												medals = notes[j].replaceAll("Allies: ([0-9\\*]{1,3}).*", "$1");
+											}
 										}
-										if (notes[j].startsWith("Allies: ")) {
-										//j++;
-										//if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
-										//		notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
-										//{
-											medals = notes[j].replaceAll("Allies: ([0-9\\*]{1,3}).*", "$1");
+									} else {
+										if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
+												notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
+										{
+											medals = notes[j].replaceAll("([0-9\\*]{1,3}).*", "$1");
 										}
 									}
 								} else {
-									if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
-											notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
-									{
-										medals = notes[j].replaceAll("([0-9\\*]{1,3}).*", "$1");
-									}
+									chat("ERROR: Problem parsing briefing, could not find Axis label. Please fix.");
 								}
 								
 								//if (brief[i].endsWith(" medal.") || brief[i].endsWith(" medals.")) {
@@ -653,6 +668,11 @@ implements GameComponent, CommandEncoder {
 							}
 						}
 						
+						if (iter >= notes.length || !notes[iter].trim().toLowerCase().startsWith("conditions of victory"))
+						{
+							chat("Warning: did not encounter Conditions of Victory section where expected. Please fix.");
+						}
+						
 						html += "<h3>Conditions of Victory</h3>";
 	
 						iter++;
@@ -668,6 +688,11 @@ implements GameComponent, CommandEncoder {
 								html += filterCompendium(notes[iter]) + "<br>";
 	
 							iter++;
+						}
+						
+						if (iter >= notes.length || !notes[iter].trim().toLowerCase().startsWith("special rules"))
+						{
+							chat("Warning: did not encounter Special Rules section where expected. Please fix.");
 						}
 						
 						html += "<h3>Special Rules</h3>";
@@ -694,7 +719,7 @@ implements GameComponent, CommandEncoder {
 							iter++;
 						}
 	
-						if (iter < notes.length)
+						if (iter < notes.length && !multiMap)
 						{
 							html += "<h3>Notes</h3>";
 						
