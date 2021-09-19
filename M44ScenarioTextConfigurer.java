@@ -19,8 +19,6 @@
 package com.memoir44.vassal;
 
 import java.awt.Rectangle;
-import java.util.StringTokenizer;
-
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -28,13 +26,10 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
-import org.apache.commons.lang.StringUtils;
-
 import VASSAL.build.AutoConfigurable;
 import VASSAL.configure.Configurer;
 import VASSAL.configure.ConfigurerFactory;
 import VASSAL.tools.ScrollPane;
-import VASSAL.tools.SequenceEncoder;
 
 /**
  * A Configurer that allows multi-line string input via a JTextArea
@@ -83,27 +78,6 @@ public class M44ScenarioTextConfigurer extends Configurer implements ConfigurerF
    */
   public static String escapeNewlines(String s) {
 	  return s.replace("\n", "|").replace("\r", "");
-	  /*
-    SequenceEncoder se = new SequenceEncoder('|');
-    StringTokenizer st = new StringTokenizer(s, "\n\r", true);
-    boolean wasNewLine = true;
-    while (st.hasMoreTokens()) {
-      String token = st.nextToken();
-      switch (token.charAt(0)) {
-      case '\n':
-        if (wasNewLine) {
-          se.append("");
-        }
-        wasNewLine = true;
-        break;
-      case '\r':
-        break;
-      default:
-        se.append(token);
-        wasNewLine = false;
-      }
-    }
-    return se.getValue() == null ? "" : se.getValue();*/
   }
 
   public void setValue(String s) {
@@ -131,7 +105,6 @@ public class M44ScenarioTextConfigurer extends Configurer implements ConfigurerF
    */
   public static String restoreNewlines(String s) {
 	  return s.replace("|", "\n");
-    //return StringUtils.join(new SequenceEncoder.Decoder(s, '|'), '\n');
   }
 
   public java.awt.Component getControls() {

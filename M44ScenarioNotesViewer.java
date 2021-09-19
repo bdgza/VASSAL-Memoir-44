@@ -22,29 +22,18 @@ import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
-import java.awt.Dialog.ModalExclusionType;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
-
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
-import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.Document;
@@ -61,8 +50,6 @@ import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameComponent;
 import VASSAL.build.module.GameState;
 import VASSAL.build.module.documentation.HelpFile;
-import VASSAL.build.widget.HtmlChart.HtmlChartHyperlinkListener;
-import VASSAL.build.widget.HtmlChart.XTMLEditorKit;
 import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
 import VASSAL.configure.Configurer;
@@ -70,10 +57,11 @@ import VASSAL.configure.ConfigurerFactory;
 import VASSAL.configure.IconConfigurer;
 import VASSAL.counters.GamePiece;
 import VASSAL.i18n.Resources;
+import VASSAL.tools.DataArchive;
 import VASSAL.tools.FormattedString;
 import VASSAL.tools.LaunchButton;
-import VASSAL.tools.ReadErrorDialog;
 import VASSAL.tools.ScrollPane;
+import VASSAL.tools.swing.DataArchiveHTMLEditorKit;
 
 /**
  * This is a copy of the NotesWindow in VASSAL with less elements in the UI specifically suited to showing Scenario notes for Memoir '44
@@ -131,7 +119,7 @@ implements GameComponent, CommandEncoder {
 	protected static void chat(String msg) {
 		final GameModule mod = GameModule.getGameModule();
 		FormattedString fStr = new FormattedString(msg);
-		final Command c = new Chatter.DisplayText(mod.getChatter(), fStr.getLocalizedText());
+		final Command c = new Chatter.DisplayText(mod.getChatter(), fStr.getLocalizedText(fStr, msg));
 		c.execute();
 		mod.sendAndLog(c);
 	}
@@ -141,7 +129,7 @@ implements GameComponent, CommandEncoder {
 		private static final long serialVersionUID = 1L;
 
 		protected M44NotesViewerDialog() {
-			super(GameModule.getGameModule().getFrame());
+			super(GameModule.getGameModule().getPlayerWindow());
 			initComponents();
 			setLocationRelativeTo(getOwner());
 		}
@@ -158,30 +146,9 @@ implements GameComponent, CommandEncoder {
 
 				final String desc = event.getDescription();
 				if ((!isURL() && desc.indexOf('/') < 0) || event.getURL() == null) {
-					/*final int hash = desc.lastIndexOf("#");
-					if (hash < 0) {
-						// no anchor
-						setFile(desc);
-					}
-					else if (hash > 0) {
-						// browse to the part before the anchor
-						setFile(desc.substring(0, hash));
-					}
-
-					if (hash != -1) {
-						// we have an anchor
-						htmlWin.scrollToReference(desc.substring(hash+1));
-					}*/
-				}
-				else {
-					/*try {
-						jEditorPane.setPage(event.getURL());
-					}
-					catch (IOException ex) {
-						ReadErrorDialog.error(ex, event.getURL().toString());
-					}
-					htmlWin.revalidate();*/
 					
+				}
+				else {					
 					openWebpage(event.getURL());
 				}
 			}
@@ -216,10 +183,13 @@ implements GameComponent, CommandEncoder {
 			jEditorPane.setEditable(false);
 
 			// create a scrollpane; modify its attributes as desired
-			JScrollPane scrollPane = new JScrollPane(jEditorPane);
+//			JScrollPane scrollPane = new JScrollPane(jEditorPane);
+			
+			GameModule gameModule = GameModule.getGameModule();
+			DataArchive dataArchive = gameModule.getDataArchive();
 
 			// add an html editor kit
-			XTMLEditorKit kit = new XTMLEditorKit();
+			DataArchiveHTMLEditorKit kit = new DataArchiveHTMLEditorKit(dataArchive);
 			jEditorPane.setEditorKit(kit);
 			
 			jEditorPane.addHyperlinkListener(new ScenarioHyperlinkListener());
@@ -702,7 +672,7 @@ implements GameComponent, CommandEncoder {
 	
 						while (iter < notes.length && !multiMap && blank < 2) {
 							if (notes[iter].length() > 0 && notes[iter].charAt(0) == '#') {
-								
+								iter++;
 							} else if (notes[iter].equals("==========***==========")) {
 								multiMap = true;
 								iter++;
@@ -718,26 +688,64 @@ implements GameComponent, CommandEncoder {
 							}
 							iter++;
 						}
-	
-						if (iter < notes.length && !multiMap)
+						
+						blank = 0;
+						
+						if (iter < notes.length && !multiMap && notes[iter].trim().toLowerCase().startsWith("notes") && blank < 2)
 						{
 							html += "<h3>Notes</h3>";
 						
 							iter++;
 		
-							while (iter < notes.length && !multiMap) {
+							while (iter < notes.length && !multiMap && blank < 2) {
 								if (notes[iter].length() > 0 && notes[iter].charAt(0) == '#') {
-									
+									iter++;
 								} else if (notes[iter].equals("==========***=========="))
 								{
 									multiMap = true;
 									iter++;
 								} else {
-									html += filterCompendium(notes[iter]) + "<br>";
+									if (notes[iter].length() == 0)
+									{
+										blank++;
+									} else {
+										blank = 0;
+									}
+									if (blank < 2)
+										html += filterCompendium(notes[iter]) + "<br>";
 								}
 								iter++;
 							}
 						}
+						
+						blank = 0;
+						
+						if (iter < notes.length && !multiMap && notes[iter].trim().toLowerCase().startsWith("designer") && blank < 2)
+						{
+							html += "<h3>Designer</h3>";
+						
+							iter++;
+		
+							while (iter < notes.length && !multiMap && blank < 2) {
+								if (notes[iter].equals("==========***=========="))
+								{
+									multiMap = true;
+									iter++;
+								} else {
+									if (notes[iter].length() == 0)
+									{
+										blank++;
+									} else {
+										blank = 0;
+									}
+									if (blank < 2)
+										html += filterCompendium(notes[iter]) + "<br>";
+								}
+								iter++;
+							}
+						}
+						
+						blank = 0;
 	
 						if (dowid.length() > 0) {
 							//html += "<a class=\"online\" href=\"http://www.daysofwonder.com/memoir44/en/editor/view/?id=" + dowid + "\">View Online</a><br>";
@@ -794,7 +802,7 @@ implements GameComponent, CommandEncoder {
 			return "freefrench";
 		if (nation.equals("vichy france") || nation.equals("france-vichy"))
 			return "vichyfrench";
-		if (nation.equals("netherlands") || nation.equals("dutch"))
+		if (nation.equals("netherlands") || nation.equals("dutch") || nation.equals("dutch east indies"))
 			return "netherlands";
 		if (nation.equals("china") || nation.equals("chinese nationalist"))
 			return "china";
@@ -847,6 +855,7 @@ implements GameComponent, CommandEncoder {
 		input = input.replaceAll("\\((SWAs .*?)\\)", "\\(<span class=\"compendium\">$1</span>\\)");
 		input = input.replaceAll("\\((Airplanes .*?)\\)", "\\(<span class=\"compendium\">$1</span>\\)");
 		input = input.replaceAll("\\((Air Rules .*?)\\)", "\\(<span class=\"compendium\">$1</span>\\)");
+		input = input.replaceAll("\\((Battle of Nations .*?)\\)", "\\(<span class=\"compendium\">$1</span>\\)");
 		
 		input = input.replaceAll("(?!>)(Temporary Majority Medal Objective[s]? \\(Turn Start\\))", "<span class=\"objective\">$1</span>");
 		input = input.replaceAll("(?!>)(Temporary Majority Medal Objective[s]?)", "<span class=\"objective\">$1</span>");

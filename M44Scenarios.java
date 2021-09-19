@@ -1,29 +1,21 @@
 package com.memoir44.vassal;
 import java.awt.event.ActionEvent;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JOptionPane;
-
 import VASSAL.build.AbstractConfigurable;
-import VASSAL.build.BadDataReport;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
 import VASSAL.build.module.GameComponent;
-import VASSAL.build.module.PredefinedSetup;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.command.Command;
 import VASSAL.configure.VisibilityCondition;
 import VASSAL.i18n.Resources;
-import VASSAL.tools.ErrorDialog;
 import VASSAL.tools.menu.ChildProxy;
 import VASSAL.tools.menu.MenuItemProxy;
 import VASSAL.tools.menu.MenuManager;
-import VASSAL.tools.menu.MenuProxy;
-import VASSAL.tools.menu.ParentProxy;
 
 public class M44Scenarios extends AbstractConfigurable implements GameComponent {
 	public static final String NAME = "name"; //$NON-NLS-1$

@@ -1,7 +1,5 @@
 package com.memoir44.vassal;
 
-import java.awt.Graphics;
-
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;
 

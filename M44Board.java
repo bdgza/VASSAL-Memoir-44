@@ -2,11 +2,7 @@ package com.memoir44.vassal;
 
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
-
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Map;
 import VASSAL.build.module.PlayerRoster;
 import VASSAL.build.module.map.boardPicker.Board;
 
@@ -16,8 +12,6 @@ public class M44Board extends Board implements PlayerRoster.SideChangeListener {
 	public M44Board()
 	{
 		super();
-		
-		PlayerRoster.addSideChangeListener(this);
 	}
 	
 	public void sideChanged(String oldSide, String newSide) {

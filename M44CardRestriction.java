@@ -30,36 +30,18 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.util.Iterator;
-import java.util.List;
-
 import javax.swing.Box;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
-import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GlobalOptions;
-import VASSAL.build.module.Map;
-import VASSAL.build.module.PlayerRoster;
-import VASSAL.build.module.PlayerRoster.PlayerInfo;
 import VASSAL.build.module.documentation.HelpFile;
-import VASSAL.command.ChangeTracker;
 import VASSAL.command.Command;
-import VASSAL.command.NullCommand;
-import VASSAL.configure.BooleanConfigurer;
-import VASSAL.configure.StringArrayConfigurer;
 import VASSAL.counters.Decorator;
 import VASSAL.counters.EditablePiece;
 import VASSAL.counters.GamePiece;
 import VASSAL.counters.KeyCommand;
 import VASSAL.counters.PieceEditor;
-import VASSAL.counters.PieceVisitor;
-import VASSAL.counters.PieceVisitorDispatcher;
 import VASSAL.counters.Properties;
-import VASSAL.counters.Stack;
-import VASSAL.launch.Player;
 import VASSAL.tools.SequenceEncoder;
 
 /**
@@ -87,7 +69,7 @@ public class M44CardRestriction extends Decorator implements EditablePiece {
 
 	public void mySetType(String type) {
 		type = type.substring(ID.length());
-		SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(type,';');
+//		SequenceEncoder.Decoder st = new SequenceEncoder.Decoder(type,';');
 	}
 
 	public Shape getShape() {

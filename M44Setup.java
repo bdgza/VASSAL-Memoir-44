@@ -5,25 +5,17 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.BadDataReport;
 import VASSAL.build.Buildable;
 import VASSAL.build.GameModule;
 import VASSAL.build.module.GameComponent;
 import VASSAL.build.module.GameState;
-import VASSAL.build.module.PredefinedSetup;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.command.Command;
 import VASSAL.configure.VisibilityCondition;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.menu.ChildProxy;
-import VASSAL.tools.menu.MenuItemProxy;
-import VASSAL.tools.menu.MenuManager;
-import VASSAL.tools.menu.MenuProxy;
-import VASSAL.tools.menu.ParentProxy;
 
 public class M44Setup extends AbstractConfigurable implements GameComponent {
 	public static final String NAME = "name"; //$NON-NLS-1$
@@ -239,22 +231,43 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 		return super.getAttributeVisibility(name);
 	}
 
-	public boolean launch() {
-		try {
-			GameState gameState = GameModule.getGameModule().getGameState();
-			
-			gameState.loadGameInBackground(getFileName(), getSavedGameContents());
+	public boolean launch()
+	{
+		GameState gameState = GameModule.getGameModule().getGameState();
+		
+		if (classified == true)
+		{
+			try {
+				gameState.loadGameInBackground(getConfigureName(), getSavedGameContents(getFileName(true)));
+			}
+			catch (Exception e0)
+			{				
+				try
+				{
+					gameState.loadGameInBackground(getConfigureName(), getSavedGameContents(getFileName(false)));
+				}
+				catch (IOException e) {
+					ErrorDialog.dataWarning(new BadDataReport(this, Resources.getString("Error.not_found", "Setup"),getFileName(),e)); //$NON-NLS-1$ //$NON-NLS-2$
+					return false;
+				}
+			}
+		}
+		else
+		{
+			try {
+				gameState.loadGameInBackground(getConfigureName(), getSavedGameContents(getFileName()));
+			}
+			catch (IOException e) {
+				ErrorDialog.dataWarning(new BadDataReport(this, Resources.getString("Error.not_found", "Setup"),getFileName(),e)); //$NON-NLS-1$ //$NON-NLS-2$
+				return false;
+			}
+		}
 
-			return true;
-		}
-		catch (IOException e) {
-			ErrorDialog.dataError(new BadDataReport(this, Resources.getString("Error.not_found", "Setup"),getFileName(),e)); //$NON-NLS-1$ //$NON-NLS-2$
-			return false;
-		}
+		return true;
 	}
 
-	public InputStream getSavedGameContents() throws IOException {
-		return GameModule.getGameModule().getDataArchive().getInputStream(getFileName());
+	public InputStream getSavedGameContents(String fileName) throws IOException {
+		return GameModule.getGameModule().getDataArchive().getInputStream(fileName);
 	}
 
 	public void addTo(Buildable parent) {
@@ -291,6 +304,17 @@ public class M44Setup extends AbstractConfigurable implements GameComponent {
 
 	public String getFileName() {
 		return fileName + ".vsav";
+	}
+	
+	public String getFileName(Boolean classified) {
+		if (!classified)
+		{
+			return getFileName();
+		}
+		else
+		{
+			return fileName + "_c.vsav";
+		}
 	}
 
 	public Command getRestoreCommand() {

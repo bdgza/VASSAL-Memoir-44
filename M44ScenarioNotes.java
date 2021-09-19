@@ -18,20 +18,30 @@
  */
 package com.memoir44.vassal;
 
+//import VASSAL.build.AbstractConfigurable;
+//import VASSAL.build.AutoConfigurable;
+//import VASSAL.build.Buildable;
+//import VASSAL.build.Configurable;
+//import VASSAL.build.GameModule;
+//import VASSAL.build.module.documentation.HelpFile;
+//import VASSAL.command.Command;
+//import VASSAL.command.CommandEncoder;
+//import VASSAL.command.NullCommand;
+//import VASSAL.configure.Configurer;
+//import VASSAL.configure.ConfigurerFactory;
+//import VASSAL.configure.IconConfigurer;
+//import VASSAL.i18n.Resources;
+//import VASSAL.tools.LaunchButton;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-
 import VASSAL.build.AbstractConfigurable;
 import VASSAL.build.AutoConfigurable;
 import VASSAL.build.Buildable;
@@ -39,18 +49,14 @@ import VASSAL.build.Configurable;
 import VASSAL.build.GameModule;
 import VASSAL.build.module.GameComponent;
 import VASSAL.build.module.documentation.HelpFile;
-import VASSAL.build.module.noteswindow.PrivateNotesController;
-import VASSAL.build.module.noteswindow.SecretNotesController;
 import VASSAL.command.Command;
 import VASSAL.command.CommandEncoder;
 import VASSAL.command.NullCommand;
 import VASSAL.configure.Configurer;
 import VASSAL.configure.ConfigurerFactory;
 import VASSAL.configure.IconConfigurer;
-import VASSAL.configure.TextConfigurer;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.LaunchButton;
-import VASSAL.tools.NamedKeyStroke;
 
 /**
  * This is a copy of the NotesWindow in VASSAL with less elements in the UI specifically suited to showing Scenario notes for Memoir '44
@@ -129,7 +135,7 @@ public class M44ScenarioNotes extends AbstractConfigurable
     private static final long serialVersionUID = 1L;
 
     protected M44NotesDialog() {
-      super(GameModule.getGameModule().getFrame());
+      super(GameModule.getGameModule().getPlayerWindow());
       initComponents();
       setLocationRelativeTo(getOwner());
     }
