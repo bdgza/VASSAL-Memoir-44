@@ -1,4 +1,4 @@
-package com.memoir44.vassal;
+package memoir44;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import VASSAL.build.AbstractConfigurable;

@@ -1,4 +1,4 @@
-package com.memoir44.vassal;
+package memoir44;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -43,14 +43,11 @@ import javax.swing.table.TableColumnModel;
 
 import VASSAL.build.BadDataReport;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameComponent;
 import VASSAL.build.module.GameState;
-import VASSAL.command.Command;
 import VASSAL.i18n.Resources;
 import VASSAL.tools.DataArchive;
 import VASSAL.tools.ErrorDialog;
-import VASSAL.tools.FormattedString;
 import VASSAL.tools.image.ImageUtils;
 
 public class M44ScenarioChooser extends JDialog {
@@ -129,14 +126,6 @@ public class M44ScenarioChooser extends JDialog {
 		myGameState = gameState;
 		
 		jbInit();
-	}
-	
-	@SuppressWarnings("unused")
-	static void WriteLine(String msgLine) {
-		FormattedString cStr = new FormattedString("- " + msgLine);
-		final Command cc = new Chatter.DisplayText(GameModule.getGameModule().getChatter(), cStr.getLocalizedText(cStr, msgLine));
-		cc.execute();
-		GameModule.getGameModule().sendAndLog(cc);
 	}
 	
 	private void jbInit() {
@@ -517,12 +506,14 @@ public class M44ScenarioChooser extends JDialog {
 						try {
 							previewImage = LoadPreviewImage(imageName);
 						} catch (FileNotFoundException e1) {
-							WriteLine("Preview Error: File Not Found; " + imageName);
-							e1.printStackTrace();
+							ErrorDialog.dataWarning(new BadDataReport(Resources.getString("Error.not_found", "Preview Image"), imageName));
+//							VassalTools.WriteLine("Preview Error: File Not Found; " + imageName);
+//							e1.printStackTrace();
 							previewImage = null;
 						} catch (IOException e1) {
-							WriteLine("Preview Error: File Not Found; " + imageName);
-							e1.printStackTrace();
+							ErrorDialog.dataWarning(new BadDataReport(Resources.getString("Error.not_found", "Preview Image"), imageName));
+//							VassalTools.WriteLine("Preview Error: File Not Found; " + imageName);
+//							e1.printStackTrace();
 							previewImage = null;
 						}
 					}

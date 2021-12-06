@@ -1,4 +1,4 @@
-package com.memoir44.vassal;
+package memoir44;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -10,11 +10,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import VASSAL.build.GameModule;
-import VASSAL.build.module.Chatter;
 import VASSAL.build.module.GameState;
 import VASSAL.command.Command;
 import VASSAL.counters.GamePiece;
-import VASSAL.tools.FormattedString;
 
 public class M44ChecksumCommand extends Command {
 	public static final String COMMAND_PREFIX = "GAMECHECKSUM\t";
@@ -46,12 +44,11 @@ public class M44ChecksumCommand extends Command {
 
 			if (chk.equals(checksumValue)) {
 				if (!silentCheck) {
-					WriteLine(mod.getPrefs().getValue(GameModule.REAL_NAME) + " > Game State Checksum = OK", false);
+					VassalTools.WriteLine(mod.getPrefs().getValue(GameModule.REAL_NAME) + " > Game State Checksum = OK");
 				}
 			} else {
-				WriteLine(mod.getPrefs().getValue(GameModule.REAL_NAME)
-						+ " > Game State Checksum = FAILED -- Synchronisation possibly lost, recommended to resync the game",
-						false);
+				VassalTools.WriteLine(mod.getPrefs().getValue(GameModule.REAL_NAME)
+						+ " > Game State Checksum = FAILED -- Synchronisation possibly lost, recommended to resync the game");
 			}
 		}
 	};
@@ -136,7 +133,7 @@ public class M44ChecksumCommand extends Command {
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			WriteLine("- ERROR: Failed to get hash algorithm", false);
+			VassalTools.WriteLine("- ERROR: Failed to get hash algorithm");
 			checksum = "";
 		}
 
@@ -157,15 +154,4 @@ public class M44ChecksumCommand extends Command {
 		return hexString.toString();
 	}
 
-	static void WriteLine(String msgLine, boolean logMsg) {
-		final GameModule mod = GameModule.getGameModule();
-
-		FormattedString cStr = new FormattedString("- " + msgLine);
-		final Command cc = new Chatter.DisplayText(mod.getChatter(), cStr.getLocalizedText(cStr, msgLine));
-		cc.execute();
-		if (logMsg)
-			mod.sendAndLog(cc);
-		else
-			mod.getServer().sendToOthers(cc);
-	}
 }

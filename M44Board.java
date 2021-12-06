@@ -1,4 +1,4 @@
-package com.memoir44.vassal;
+package memoir44;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -23,7 +23,7 @@ public class M44Board extends Board implements PlayerRoster.SideChangeListener {
 	public void draw(Graphics g, int x, int y, double zoom, Component obs) {
 		playerSide = PlayerRoster.getMySide();
 		
-		GameModule.getGameModule().warn("draw() - " + playerSide);
+		GameModule.getGameModule().warn("draw() – " + playerSide);
 		
 		if (playerSide != null)
 			this.reversed = (playerSide.indexOf("Axis") != -1);

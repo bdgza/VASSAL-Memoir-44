@@ -1,4 +1,4 @@
-package com.memoir44.vassal;
+package memoir44;
 
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Map;

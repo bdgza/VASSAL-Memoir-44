@@ -24,7 +24,7 @@
  * To change template for new class use
  * Code Style | Class Templates options (Tools | IDE Options).
  */
-package com.memoir44.vassal;
+package memoir44;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -45,7 +45,8 @@ import VASSAL.counters.Properties;
 import VASSAL.tools.SequenceEncoder;
 
 /**
- * A GamePiece with the Restricted trait can only be manipulated by the player playing a specific side
+ * A GamePiece with the Restricted trait can only be manipulated by the player
+ * playing a specific side
  */
 public class M44CardRestriction extends Decorator implements EditablePiece {
 	public static final String ID = "restrictM44;";
@@ -100,10 +101,10 @@ public class M44CardRestriction extends Decorator implements EditablePiece {
 		if (getMap() != null)
 			gameMap = getMap().getMapName();
 
-		//if (owningPlayer.length() == 0)
-		//	owningPlayer = GlobalOptions.getInstance().getPlayerId();
+		// if (owningPlayer.length() == 0)
+		// owningPlayer = GlobalOptions.getInstance().getPlayerId();
 
-		//if (gameMap.equals("Axis") || gameMap.equals("Allies")) {
+		// if (gameMap.equals("Axis") || gameMap.equals("Allies")) {
 		if (gameMap.length() > 0) {
 			String ownervalue = piece.getProperty("OwnerValue").toString();
 			if (ownervalue.length() <= 1)
@@ -112,27 +113,29 @@ public class M44CardRestriction extends Decorator implements EditablePiece {
 			String hidden = piece.getProperty("ObscuredToOthers").toString();
 
 			if (hidden.equals("true") && !ownervalue.equals(GlobalOptions.getInstance().getPlayerId()))
-				//if (hidden.equals("true") && !owningPlayer.equals(GlobalOptions.getInstance().getPlayerId()))
+				// if (hidden.equals("true") &&
+				// !owningPlayer.equals(GlobalOptions.getInstance().getPlayerId()))
 				restricted = true;
-			//if (hidden.equals("true") && (!ownervalue.equals(PlayerRoster.getMySide())))
+			// if (hidden.equals("true") && (!ownervalue.equals(PlayerRoster.getMySide())))
 
-			//Command c = new Chatter.DisplayText(GameModule.getGameModule().getChatter(),"RESTRICT: 1,"+ownervalue+" // 2,"+hidden+" // 3,"+owningPlayer+" // 4,"+GameModule.getUserId()+" // 5,"+PlayerRoster.getMySide()+" // 6,"+
-			//		GlobalOptions.getInstance().getPlayerId() + " // h," + hidden + " // r," + restricted);
-			//c.execute();
-			//GameModule.getGameModule().sendAndLog(c);
+			// Command c = new
+			// Chatter.DisplayText(GameModule.getGameModule().getChatter(),"RESTRICT:
+			// 1,"+ownervalue+" // 2,"+hidden+" // 3,"+owningPlayer+" //
+			// 4,"+GameModule.getUserId()+" // 5,"+PlayerRoster.getMySide()+" // 6,"+
+			// GlobalOptions.getInstance().getPlayerId() + " // h," + hidden + " // r," +
+			// restricted);
+			// c.execute();
+			// GameModule.getGameModule().sendAndLog(c);
 		}
 
 		return restricted;
 	}
 
-	/*  @Override
-  public void setMap(Map m) {
-    if (m != null && restrictByPlayer && owningPlayer.length() == 0) {
-      owningPlayer = GameModule.getUserId();
-    }
-    super.setMap(m);
-  }
-	 */  
+	/*
+	 * @Override public void setMap(Map m) { if (m != null && restrictByPlayer &&
+	 * owningPlayer.length() == 0) { owningPlayer = GameModule.getUserId(); }
+	 * super.setMap(m); }
+	 */
 	@Override
 	public void setProperty(Object key, Object val) {
 		super.setProperty(key, val);
@@ -141,8 +144,7 @@ public class M44CardRestriction extends Decorator implements EditablePiece {
 	protected KeyCommand[] getKeyCommands() {
 		if (!isRestricted()) {
 			return super.getKeyCommands();
-		}
-		else {
+		} else {
 			return new KeyCommand[0];
 		}
 	}
@@ -151,17 +153,15 @@ public class M44CardRestriction extends Decorator implements EditablePiece {
 	public Object getLocalizedProperty(Object key) {
 		if (Properties.RESTRICTED.equals(key)) {
 			return Boolean.valueOf(isRestricted());
-		}
-		else {
+		} else {
 			return super.getLocalizedProperty(key);
-		}    
+		}
 	}
 
 	public Object getProperty(Object key) {
 		if (Properties.RESTRICTED.equals(key)) {
 			return Boolean.valueOf(isRestricted());
-		}
-		else {
+		} else {
 			return super.getProperty(key);
 		}
 	}
@@ -181,8 +181,7 @@ public class M44CardRestriction extends Decorator implements EditablePiece {
 	public Command keyEvent(KeyStroke stroke) {
 		if (!isRestricted()) {
 			return super.keyEvent(stroke);
-		}
-		else {
+		} else {
 			return null;
 		}
 	}

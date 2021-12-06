@@ -1,4 +1,4 @@
-package com.memoir44.vassal;
+package memoir44;
 
 import java.util.Comparator;
 
