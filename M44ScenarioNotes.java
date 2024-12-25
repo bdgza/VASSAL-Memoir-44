@@ -413,7 +413,7 @@ public class M44ScenarioNotes extends M44AbstractToolbarItem
 		}
 	}
 
-    protected static String flagForNation(String nation) {
+    protected static String flagForNation(String nation, Boolean isCommunist) {
 		nation = nation.toLowerCase();
 		nation = nthfield(nation, "/", 1);
 		
@@ -425,7 +425,7 @@ public class M44ScenarioNotes extends M44AbstractToolbarItem
 			return "japan";
 		if (nation.equals("germans"))
 			return "germany";
-		if (nation.equals("americans"))
+		if (nation.equals("americans") || nation.equals("usa"))
 			return "us";
 		if (nation.equals("usmc") || nation.equals("united states marine corps") || nation.equals("us marine corps") || nation.equals("us marines") || nation.equals("united states marines"))
 			return "usmc";
@@ -435,7 +435,9 @@ public class M44ScenarioNotes extends M44AbstractToolbarItem
 			return "vichyfrench";
 		if (nation.equals("netherlands") || nation.equals("dutch") || nation.equals("dutch east indies"))
 			return "netherlands";
-		if (nation.equals("china") || nation.equals("chinese nationalist"))
+		if (nation.equals("china"))
+			return isCommunist ? "communistchina" : "china";
+		if (nation.equals("chinese nationalist") || nation.equals("nationalist china"))
 			return "china";
 		if (nation.equals("france") || nation.equals("french"))
 			return "france";
@@ -448,6 +450,15 @@ public class M44ScenarioNotes extends M44AbstractToolbarItem
 		if (nation.equals("yugoslavia") || nation.equals("yugoslav resistance") || nation.equals("yugoslav partisans"))
 			return "yugoslavia";
 		
+		if (nation.equals("south korea") || nation.equals("south korean"))
+			return "southkorea";
+		if (nation.equals("north korea") || nation.equals("north korean"))
+			return "northkorea";
+		if (nation.equals("communist china") || nation.equals("republic china") || nation.equals("republic of china") || nation.equals("china republic"))
+			return "communistchina";
+		if (nation.equals("united nations"))
+			return "un";
+		
 		if (nation.equals("nationalist spain")) return "spainrep";
 		if (nation.equals("republican spain")) return "spainnat";
 		if (nation.equals("new zealand")) return "newzealand";
@@ -458,7 +469,8 @@ public class M44ScenarioNotes extends M44AbstractToolbarItem
 				|| (nation.equals("romania")) || (nation.equals("vichy france")) || (nation.equals("hungary"))
 				|| (nation.equals("australia")) || (nation.equals("albania")) || (nation.equals("norway")) || (nation.equals("greece"))
 				|| (nation.equals("thailand")) || (nation.equals("croatia")) || (nation.equals("philippines")) || (nation.equals("bulgaria"))
-				|| (nation.equals("southafrica"))
+				|| (nation.equals("southafrica")) || (nation.equals("brazil")
+				|| (nation.equals("southkorea") || (nation.equals("northkorea") || nation.equals("communistchina") || nation.equals("un"))))
 				) return nation;
 
 		return "";
@@ -698,11 +710,12 @@ public class M44ScenarioNotes extends M44AbstractToolbarItem
 								String nation = "";
 								String flag = "";
 								String medal = "";
+								Boolean isCommunist = brief[i].startsWith("Communist");
 								switch (start) {
 								case 1:
 									nation = "Axis";
 									flag = "germany";
-									medal = "medal-axis";
+									medal = isCommunist ? "medal-communist" : "medal-axis";
 									break;
 								case 2:
 									nation = "Allies";
@@ -742,7 +755,7 @@ public class M44ScenarioNotes extends M44AbstractToolbarItem
 								if (brief[i].length() == 0)
 									i++;
 								
-								String newFlag = flagForNation(nation);
+								String newFlag = flagForNation(nation, isCommunist);
 								if (newFlag.length() > 0)
 									flag = newFlag;
 								
@@ -764,12 +777,12 @@ public class M44ScenarioNotes extends M44AbstractToolbarItem
 								
 								if (j < notes.length)
 								{
-									if (notes[j].startsWith("Axis: ")) {
+									if (notes[j].startsWith("Axis: ") || notes[j].startsWith("Communist: ")) {
 										if (start == 1) {
 											//if (notes[j].trim().endsWith(" medal.") || notes[j].trim().endsWith(" medals.") ||
 											//		notes[j].trim().endsWith(" Medal.") || notes[j].trim().endsWith(" Medals."))
 											//{
-												medals = notes[j].replaceAll("Axis: ([0-9\\*]{1,3}).*", "$1");
+												medals = notes[j].replaceAll("(Axis|Communist): ([0-9\\*]{1,3}).*", "$2");
 											//}
 										} else {
 											j++;
@@ -996,11 +1009,39 @@ public class M44ScenarioNotes extends M44AbstractToolbarItem
 						}
 						
 						blank = 0;
+						
+						if (iter < notes.length && !multiMap && notes[iter].trim().toLowerCase().startsWith("contributor") && blank < 2)
+						{
+							html += "<h3>Scenario Contributor</h3>";
+						
+							iter++;
+		
+							while (iter < notes.length && !multiMap && blank < 2) {
+								if (notes[iter].equals("==========***=========="))
+								{
+									multiMap = true;
+									iter++;
+								} else {
+									if (notes[iter].length() == 0)
+									{
+										blank++;
+									} else {
+										blank = 0;
+									}
+									if (blank < 2)
+										html += filterCompendium(notes[iter]) + "<br>";
+								}
+								iter++;
+							}
+						}
+						
+						blank = 0;
 	
 						if (dowid.length() > 0) {
-							//html += "<a class=\"online\" href=\"http://www.daysofwonder.com/memoir44/en/editor/view/?id=" + dowid + "\">View Online</a><br>";
-							//html += subtitle + "<br>";
-							html += "<br><table width=\"100%\" align=\"center\"><td align=\"center\"><a href=\"http://www.daysofwonder.com/memoir44/en/editor/view/?id=" + dowid + "\"><img src=\"m44-www.png\" /></a></td></table>\n";
+							html += "<br><table width=\"100%\" align=\"center\">";
+							html += "<td align=\"center\"><a href=\"https://www.daysofwonder.com/memoir-44/archives/" + dowid + "\"><img src=\"m44-www-archives.png\" /></a></td>";
+							html += "<td align=\"center\"><a href=\"https://dowlegacy.daysofwonder.com/memoir44/en/editor/view/?id=" + dowid + "\"><img src=\"m44-www-legacy.png\" /></a></td>";
+							html += "</table>\n";
 						}
 	
 						if (multiMap) {

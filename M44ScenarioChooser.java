@@ -92,7 +92,7 @@ public class M44ScenarioChooser extends JDialog {
 	
 	private JPanel jpYear;
 	private JCheckBox[] jcYear;
-	private String[] yearNames = {"1936", "1937", "1938", "1939", "1940", "1941", "1942", "1943", "1944", "1945"};
+	private String[] yearNames = {"1931", "1932", "1933", "1934", "1935", "1936", "1937", "1938", "1939", "1940", "1941", "1942", "1943", "1944", "1945", "1946", "1947", "1948", "1949", "1950", "1951", "1952", "1953"};
 	private String[] monthNames = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 	private boolean[] filterYears = new boolean[yearNames.length + 1];
 	
@@ -428,7 +428,8 @@ public class M44ScenarioChooser extends JDialog {
 		
 		jpYear = new JPanel();
 		jpYear.setBorder(BorderFactory.createTitledBorder("Year"));
-		jpYear.setLayout(new BoxLayout(jpYear, BoxLayout.Y_AXIS));
+		//jpYear.setLayout(new BoxLayout(jpYear, BoxLayout.Y_AXIS));
+		jpYear.setLayout(new GridLayout(0, 2));
 		
 		jcYear = new JCheckBox[yearNames.length];
 		for (int i = 0; i < yearNames.length; i++) {
